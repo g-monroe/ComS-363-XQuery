@@ -1,0 +1,140 @@
+
+//Gavin Monroe 369429088
+//Item 1
+
+<showtext>
+$Saxon:> 
+<tr>
+   {
+   for $s in doc("ComS363/Demos/Datasets/Student.xml")//Student
+   for $p in doc("ComS363/Demos/Datasets/Person.xml")//Person[ID=$s/StudentID]/Name
+   for $p1 in doc("ComS363/Demos/Datasets/Person.xml")//Person[ID=$s/MentorID]/Name
+   return <E> <StudentName>{$p/text()}</StudentName><MentorName>{$p1/text()}</MentorName></E>
+   }</tr>
+ ; 
+</showtext>
+
+//Item 2
+
+<showtext>
+$Saxon:> 
+<tr>
+   {
+   for $c in distinct-values(doc("ComS363/Demos/Datasets/Student.xml")//Student/Classification)
+   let $s := doc("ComS363/Demos/Datasets/Student.xml")//Student[Classification = $c]/GPA
+   return <E> {<Classification>{$c}</Classification>,<GPA>{avg($s)}</GPA>}</E>
+   }</tr>
+ ; 
+</showtext>
+
+//Item 3
+
+<showtext>
+$Saxon:> 
+<tr>
+   {
+   for $e in distinct-values(doc("ComS363/Demos/Datasets/Enrollment.xml")//Enrollment[Grade = "A"]
+/StudentID)
+   let $s := doc("ComS363/Demos/Datasets/Student.xml")//Student[StudentID = $e]
+   let $p := doc("ComS363/Demos/Datasets/Person.xml")//Person[ID = $s/StudentID]/Name
+   return <E> <StudentName>{$p/text()}</StudentName></E>
+   }
+</tr>
+ ; 
+</showtext>
+
+//Item 4
+
+<showtext>
+$Saxon:> 
+<tr>
+   {
+   for $c in doc("ComS363/Demos/Datasets/Course.xml")//Course[PreReq = "CS311"]
+   return <E> <CourseName>{$c/CourseName/text()}</CourseName></E>
+   }
+</tr>
+ ; 
+</showtext>
+
+//Item 5
+
+<showtext>
+$Saxon:> 
+<tr>
+   {
+   for $e in distinct-values(doc("ComS363/Demos/Datasets/Enrollment.xml")//Enrollment
+/StudentID)
+   let $s := doc("ComS363/Demos/Datasets/Student.xml")//Student[StudentID = $e]
+   let $p := doc("ComS363/Demos/Datasets/Person.xml")//Person[ID = $s/StudentID]/Name
+   let $p1 := doc("ComS363/Demos/Datasets/Person.xml")//Person[ID = $s/MentorID]/Name
+   return <E> <StudentName>{$p/text()}</StudentName><MentorName>{$p1/text()}</MentorName></E>
+   }
+</tr>
+ ; 
+</showtext>
+
+//Item 6
+
+<showtext>
+$Saxon:> 
+<Students>{
+   for $c in distinct-values(doc("ComS363/Demos/Datasets/Student.xml")//Student/Classification)
+        return <Classification>{
+                 $c,
+                 <StudentList>{
+	let $s := doc("ComS363/Demos/Datasets/Student.xml")//Student[Classification = $c]/StudentID
+	let $p := doc("ComS363/Demos/Datasets/Person.xml")//Person[ID = $s]/Name
+   	return <StudentName>{
+	          $p
+                 	}</StudentName>
+     }</StudentList>
+    }</Classification>
+   }</Students>
+ ; 
+</showtext>
+
+//Item 7
+
+<showtext>
+$OOXQuery:>
+<Item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> {
+   for $e in doc("ComS363/Demos/Datasets/UniversityOODB(ODMG).xml")//Faculty
+   where $e.Salary >= 100000
+   return <result> { $e.Rank, $e.Name } </result>
+} </Item>;
+</showtext>
+
+//Item 8
+
+<showtext>
+$OOXQuery:>
+<Item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> {
+   for $e in doc("ComS363/Demos/Datasets/UniversityOODB(ODMG).xml")//Student
+   return <result> { $e.Name, $e.Mentor.Name } </result>
+} </Item>;
+</showtext>
+
+//Item 9
+
+<showtext>
+$OOXQuery:>
+<Item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> {
+   for $e in doc("ComS363/Demos/Datasets/UniversityOODB(ODMG).xml")//Faculty
+   return <Mentor> { 
+	$e.Name, <Students>{
+	for $s in $e.Mentoring
+	     return <Student>{$s.Name, $s.Classification, $s.GPA}</Student>
+}</Students>
+	} </Mentor>
+} </Item>;
+</showtext>
+
+//Item 10
+
+<showtext>
+$OOXQuery:>
+<Item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> {
+   for $e in doc("ComS363/Demos/Datasets/UniversityOODB(ODMG).xml")//Offering
+   return <Course> { $e.Instructor.Name, $e.CourseInfo.CourseName, $e.Section } </Course>
+} </Item>;
+</showtext>
